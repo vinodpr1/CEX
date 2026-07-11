@@ -4,10 +4,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --watch src/index.js"
+    "dev": "bun --watch src/index.js",
+    "prisma:generate": "prisma generate"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/pg": "^8.20.0",
     "prisma": "^7.8.0"
   },
@@ -19,7 +21,9 @@
     "@prisma/client": "^7.8.0",
     "@types/express": "^5.0.6",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
-    "redis": "^6.0.0"
+    "redis": "^6.0.0",
+    "zod": "^4.4.3"
   }
 }

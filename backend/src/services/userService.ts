@@ -11,19 +11,12 @@ export default class userService {
         }
     }
 
-    static signIn = async () =>{
+    static signIn = async (email:string, password:string) =>{
         try {
-            
+            const response = await userRepository.signIn(email, password);
+            return response;
         } catch (error) {
-            
-        }
-    }
-
-    static signOut = async () =>{
-        try {
-            
-        } catch (error) {
-            
+            throw error;
         }
     }
 

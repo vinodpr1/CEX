@@ -5,7 +5,7 @@ import { createClient } from "redis"
 const app = express();
 
 const client = createClient({
-    url: "rediss://default:gQAAAAAAAX_hAAIgcDI5ZTA4Mzc3NGQ4MzA0OTczOTU3MTkyNzRjOWNmYjA3Mg@faithful-basilisk-98273.upstash.io:6379"
+    url: process.env.REDIS_URL || "",
   });
 
 client.on("error", function(err) {
@@ -13,8 +13,8 @@ client.on("error", function(err) {
 });
 await client.connect()
 
-app.use("/api", router);
 app.use(express.json());
+app.use("/api", router);
 
 const main = async () =>{
     console.log("Server is running on port 3000");
