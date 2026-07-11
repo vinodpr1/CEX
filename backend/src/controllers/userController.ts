@@ -1,37 +1,48 @@
 import userService from "../services/userService";
-import type{ userType } from "../types/user.type";
+import type {Request, Response} from 'express';
+import { userType } from "../types/user.type";
+import { validationErrors } from "../utils/validation";
 export default class userController {
    
-    static signUp = async (req:userType, res:any) => {
+    static signUp = async (req:Request, res:Response): Promise<void> => {
         try {
-            console.log("req", req);
-            const { email, password } = req;
-            console.log("req", req);
+            const parsedBody = userType.safeParse(req.body);
+            if(!parsedBody.success){
+                validationErrors(res, parsedBody.error);
+                return;
+            }
+            const { email, password } = parsedBody.data;
             const response = await userService.signUp(email, password);
-            console.log(response);
-            return res.status(200).json({ 
-                userId: response?.id, 
+            res.status(201).json({ 
+                userId: response?.userId, 
+                userName: response?.userName,
+                token: response?.token,
                 message: "Signup success vv"
             });
         } catch (error) {
-            res.status(500).json({ message: "Internal server error" });
+            res.status(409).json({ error: "username already exists" });
         }
     }
 
     static signIn = async (req:any, res:any) => {
         try {
-            return res.json({Message: "Signin"});
+            const parsedBody = userType.safeParse(req.body);
+            if(!parsedBody.success){
+                validationErrors(res, parsedBody.error);
+                return;
+            }
+            const { email, password } = parsedBody.data;
+            const response = await userService.signIn(email, password);
+            res.status(201).json({ 
+                userId: response?.userId, 
+                userName: response?.userName,
+                token: response?.token,
+                message: "Signun success"
+            });
         } catch (error) {
-            res.json({ message: "Internal server error" });
+            const message = error instanceof Error ? error.message : "Internal server error";
+            const status = message === "User not found" ? 404 : 401;
+            res.status(status).json({ message });
         }
     }
-
-    static logout = async (req:any, res:any) => {
-        try {
-            return res.json({Message: "Logout"});
-        } catch (error) {
-            res.json({ message: "Internal server error" });
-        }
-    }
-
 }
