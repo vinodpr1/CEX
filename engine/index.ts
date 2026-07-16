@@ -1,14 +1,35 @@
 import { createClient } from "redis"
 
-const client = createClient({
-  url: "rediss://default:gQAAAAAAAX_hAAIgcDI5ZTA4Mzc3NGQ4MzA0OTczOTU3MTkyNzRjOWNmYjA3Mg@faithful-basilisk-98273.upstash.io:6379"
+const redisClient = createClient({
+  url: process.env.REDIS_URL || ""
 });
 
-client.on("error", function(err) {
+redisClient.on("error", function(err) {
   throw err;
 });
-await client.connect()
-await client.set('vinod','Vinod Prajapati');
+
+async function connectRedis(){
+  let retries = 3;
+    for(let i=0;i < retries; i++){
+      try {
+        await redisClient.connect();
+        return;
+      } catch (error) {
+        if(i===retries - 1){
+          throw error;
+        }
+        await new Promise(resolve => setTimeout(resolve, 10000));
+      }
+    }
+}
+
+await connectRedis()
+
+while(1){
+  const x = await redisClient.blPop("create_order", 10);
+  console.log("Hellos", x);
+}
+
 
 // // Disconnect after usage
 // await client.disconnect();
