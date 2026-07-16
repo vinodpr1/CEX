@@ -26,7 +26,7 @@ async function connectRedis(){
 await connectRedis()
 
 while(1){
-  const x = await redisClient.blPop("create_order", 10);
+  const x = await redisClient.brPop("create_order", 10);
   console.log("Hellos", x);
 }
 

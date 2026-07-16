@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { exchangeSchema } from "../types/exchange-schema";
 import { validationErrors } from "../utils/validationErrors";
 import { createOrderEngone } from "../utils/engine";
+import { redisClient } from "../index";
 
 const getUser = (req: any) =>{
     if(!req.user){
@@ -11,7 +12,7 @@ const getUser = (req: any) =>{
     return req.user;
 }
 export default class orderController {
-    static getOrder = async (req:Request, res:Response): Promise<void> => {
+    static createOrder = async (req:Request, res:Response): Promise<void> => {
         try {
             const parsedBody = exchangeSchema.safeParse(req.body);
             if(!parsedBody.success){
@@ -29,8 +30,11 @@ export default class orderController {
             qty,
             userid: user.id
         })
-        res.status(engineResponse.ok ? 200 : 400).json(engineResponse.ok ? engineResponse.data : {error: engineResponse.error});
+        await redisClient.lPush("create_order", JSON.stringify({type, side, symbol, price: type === "limit" ? price : null, qty, userid: user.id}));
+        // res.status(engineResponse.ok ? 200 : 400).json(engineResponse.ok ? engineResponse.data : {error: engineResponse.error});
+        res.json({ message: "Order created successfully" });
         } catch (error) {
+            console.error(error);
             res.json({ message: "Internal server error" });
         }
     }
