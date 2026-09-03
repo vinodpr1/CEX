@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --watch src/index.js",
+    "dev": "bun src/index.js",
     "prisma:generate": "prisma generate"
   },
   "devDependencies": {
